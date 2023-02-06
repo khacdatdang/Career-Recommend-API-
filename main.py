@@ -163,12 +163,22 @@ def normalization_data(data):
 
 @app.post('/career_recommender')
 def career_recommender(input_parameters : model_input):
-    career_info = pd.read_csv('career_info.csv', index_col = 0)
+    career_info = pd.read_csv('career_info.csv')
+    career_info = career_info.fillna('')
     input_data = input_parameters.json()
     input_dictionary = json.loads(input_data)
-    
-    model_data = normalization_data(input_dictionary)
+    skills = ['Học hiệu quả', 'Lắng nghe tích cực', 'Giải quyết vấn đề phức tạp', 'Làm việc nhóm', 'Tư duy phản biện', 'Bảo trì thiết bị', 'Lựa chọn thiết bị', 'Cài đặt', 'Hướng dẫn', 'Phán đoán và ra quyết định', 'Chiến lược học tập', 'Quản lý tài chính', 'Quản lý tài nguyên vật chất', 'Quản lý tài nguyên nhân sự', 'Toán học', 'Giám sát', 'Đàm phán', 'Điều hành và kiểm soát', 'Phân tích hoạt động', ' Giám sát hoạt động', 'Thuyết phục', 'Lập trình', 'Phân tích kiểm soát chất lượng', 'Đọc hiểu', 'Sửa chữa', 'Khoa học', 'Định hướng dịch vụ', 'Nhận thức xã hội', 'Nói', 'Phân tích hệ thống', 'Đánh giá hệ thống', 'Thiết kế công nghệ', 'Quản lý thời gian', 'Khắc phục sự cố', 'Viết']
 
+    model_data = normalization_data(input_dictionary)
+    temp = []
+    for i in range(0, len(skills)):
+      if (skills[i] in set(model_data['Skill'])):
+        temp.append(1)
+      else:
+        temp.append(0)
+      
+    
+    model_data['Skill']  = temp
     arr = [ model_data['Gender'], model_data['Experience'] , model_data['Age'] , model_data['Grade'], model_data['Field'], model_data['Education'], model_data['Skill'] ]
     # print(arr)
     temp_df = pd.DataFrame([arr],columns = ['Gender','Number of Experience','Age','Grade','Field','Education','Skill_array'])
@@ -187,5 +197,6 @@ def career_recommender(input_parameters : model_input):
     recommend_career = pd.concat([recommend_career_1,recommend_career_2])
     
     
-    return recommend_career.iloc[0:5,0]
+    return recommend_career.iloc[0:5,[0,-3,-2]]
+    # return model_data['Skill'] 
 
