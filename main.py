@@ -32,6 +32,8 @@ from ast import literal_eval
 import numpy as np
 from numpy.linalg import norm
 
+
+from routers import ToolsRoutes
 industry_field = pd.read_csv('industry_field.csv')
 
 app = FastAPI()
@@ -161,6 +163,10 @@ def normalization_data(data):
 
   return model_data
 
+@app.get('/')
+def read_root():
+  return 'Hello world'
+
 @app.post('/career_recommender')
 def career_recommender(input_parameters : model_input):
     career_info = pd.read_csv('2802_recommend_career.csv', index_col = 0)
@@ -200,3 +206,4 @@ def career_recommender(input_parameters : model_input):
     return recommend_career.iloc[0:5,[0,1,3,4]]
 
 
+app.include_router(ToolsRoutes.router)
