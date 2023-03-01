@@ -33,7 +33,6 @@ import numpy as np
 from numpy.linalg import norm
 
 
-from routers import ToolsRoutes
 industry_field = pd.read_csv('industry_field.csv')
 
 app = FastAPI()
@@ -205,5 +204,3 @@ def career_recommender(input_parameters : model_input):
     
     return recommend_career.iloc[0:5,[0,1,3,4]]
 
-
-app.include_router(ToolsRoutes.router)
