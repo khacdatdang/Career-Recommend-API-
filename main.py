@@ -156,7 +156,7 @@ def normalization_data(data):
   model_data['Experience'] = normalize_experience(data['Experience'])
   model_data['Education'] = normalize_education(data['Education'])
   model_data['Grade'] = normalize_grade(data['Grade'])
-  # model_data['Major_Field_Text'] = major_search(data['Major'])
+  model_data['Major_Field_Text'] = major_search(data['Major'])
   model_data['Major_Field'] = normalize_field(major_search(data['Major']))
   model_data['Skill'] = data['Skill']
 
@@ -188,7 +188,7 @@ def career_recommender(input_parameters : model_input):
     temp_df = pd.DataFrame([arr],columns = ['Gender','Number of Experience','Age','Grade','Major_Field','Education','Skill_array'])
     # print(temp_df)
 
-    # recommend_career = career_info[career_info['Ngành tiếng việt'] == model_data['Field_Text']]
+    recommend_career = career_info[career_info['Ngành tiếng việt'] == model_data['Major_Field_Text']]
     recommend_career  = career_info
     group = group_prediction.predict(temp_df.iloc[:,0:-1])[0]
     recommend_career_1 = recommend_career[recommend_career['Group'] == group]
