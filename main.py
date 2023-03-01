@@ -57,7 +57,7 @@ class model_input(BaseModel):
 
 
 #loading saved model
-group_prediction = pickle.load(open('decision_tree_model.sav','rb'))
+group_prediction = pickle.load(open('random_forest_model.sav','rb'))
 
 def normalize_experience(data):
   if data == 0:
@@ -163,6 +163,42 @@ def normalization_data(data):
 
 @app.post('/career_recommender')
 def career_recommender(input_parameters : model_input):
+    career_info = pd.read_csv('2802_recommend_career.csv', index_col = 0)
+    input_data = input_parameters.json()
+    input_dictionary = json.loads(input_data)
+    skills = ['Học hiệu quả', 'Lắng nghe tích cực', 'Giải quyết vấn đề phức tạp', 'Làm việc nhóm', 'Tư duy phản biện', 'Bảo trì thiết bị', 'Lựa chọn thiết bị', 'Cài đặt', 'Hướng dẫn', 'Phán đoán và ra quyết định', 'Chiến lược học tập', 'Quản lý tài chính', 'Quản lý tài nguyên vật chất', 'Quản lý tài nguyên nhân sự', 'Toán học', 'Giám sát', 'Đàm phán', 'Điều hành và kiểm soát', 'Phân tích hoạt động', ' Giám sát hoạt động', 'Thuyết phục', 'Lập trình', 'Phân tích kiểm soát chất lượng', 'Đọc hiểu', 'Sửa chữa', 'Khoa học', 'Định hướng dịch vụ', 'Nhận thức xã hội', 'Nói', 'Phân tích hệ thống', 'Đánh giá hệ thống', 'Thiết kế công nghệ', 'Quản lý thời gian', 'Khắc phục sự cố', 'Viết']
+
+    model_data = normalization_data(input_dictionary)
+    temp = []
+    for i in range(0, len(skills)):
+      if (skills[i] in set(model_data['Skill'])):
+        temp.append(1)
+      else:
+        temp.append(0)
+      
+    
+    model_data['Skill']  = temp
+    arr = model_data['Gender'], model_data['Experience'] , model_data['Age'] , model_data['Grade'], model_data['Major_Field'], model_data['Education'], model_data['Skill'] 
+    # print(arr)
+    temp_df = pd.DataFrame([arr],columns = ['Gender','Number of Experience','Age','Grade','Major_Field','Education','Skill_array'])
+    # print(temp_df)
+
+    # recommend_career = career_info[career_info['Ngành tiếng việt'] == model_data['Field_Text']]
+    recommend_career  = career_info
+    group = group_prediction.predict(temp_df.iloc[:,0:-1])[0]
+    recommend_career_1 = recommend_career[recommend_career['Group'] == group]
+    # print(recommend_career_1)
+    recommend_career_2 = recommend_career[recommend_career['Group'] != group]
+
+    recommend_career_1['Weight'] = recommend_career_1['Skill'].apply(lambda x: np.dot(np.array(literal_eval(x)),np.array(temp_df.iloc[0,-1]))  ) 
+    recommend_career_2['Weight'] = recommend_career_2['Skill'].apply(lambda x: np.dot(np.array(literal_eval(x)),np.array(temp_df.iloc[0,-1])))
+    recommend_career_1.sort_values(by=['Weight']) 
+    recommend_career_2.sort_values(by=['Weight'])
+    recommend_career = pd.concat([recommend_career_1,recommend_career_2])
+    print(recommend_career)
+    
+    return recommend_career.iloc[0:5,[0,1,3,4]]
+
     career_info = pd.read_csv('career_info.csv')
     career_info = career_info.fillna('')
     input_data = input_parameters.json()
