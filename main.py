@@ -155,8 +155,8 @@ def normalization_data(data):
   model_data['Experience'] = normalize_experience(data['Experience'])
   model_data['Education'] = normalize_education(data['Education'])
   model_data['Grade'] = normalize_grade(data['Grade'])
-  model_data['Field_Text'] = major_search(data['Major'])
-  model_data['Field'] = normalize_field(major_search(data['Major']))
+  model_data['Major_Field_Text'] = major_search(data['Major'])
+  model_data['Major_Field'] = normalize_field(major_search(data['Major']))
   model_data['Skill'] = data['Skill']
 
   return model_data
