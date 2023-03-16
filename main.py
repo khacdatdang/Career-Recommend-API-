@@ -198,4 +198,4 @@ def career_recommender(input_parameters : model_input):
     recommend_career = pd.concat([recommend_career_1,recommend_career_2])
     print(recommend_career)
     
-    return recommend_career.iloc[0:5,[0,3,4]]
+    return recommend_career.iloc[0:5,[0,1,3,4]]
